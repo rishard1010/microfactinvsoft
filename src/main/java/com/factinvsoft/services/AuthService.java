@@ -41,8 +41,23 @@ public class AuthService {
         return null;
     }
 
-    public JsonArray consultarUsuario(final int idusuario) throws SQLException {
+    public JsonArray consultarUsuario(final int idUsuario) throws SQLException {
         return db.consultar("SELECT IDUSUARIO,NOMBREUSUARIO FROM USUARIOS WHERE ACTIVO = 1 AND IDUSUARIO = ?", null,
-                idusuario);
+                idUsuario);
+    }
+
+    public JsonArray menu (final int idUsuario) throws SQLException{
+        String sql = "SELECT COM.OPCION,CM.MENU,CM.DESCRIPCIONMENU,CSM.SUBMENU,CSM.DESCRIPCIONSUBMENU, COM.DESCRIPCION, COM.RUTA, CM.ICONO AS ICONOMENU,COM.ICONO AS ICONOOPCION, "
+        + "CSM.ICONO AS ICONOSUBMENU,CM.ORDEN, CSM.ORDEN AS ORDENSUBMENU,COM.ORDEN AS ORDENOPCION  "
+        + "FROM PERMISOSPERFILES CP "
+        + "INNER JOIN USUARIOSPERFILES CU ON CP.CODPERFIL = CU.CODPERFIL " 
+        + "INNER JOIN OPCIONESMENU COM ON CP.OPCION = COM.OPCION "
+        + "INNER JOIN MENU CM ON COM.CODMENU = CM.CODMENU "
+        + "LEFT JOIN SUBMENU CSM ON COM.CODSUBMENU = CSM.CODSUBMENU "
+        + "WHERE CU.IDUSUARIO = ? AND COM.ESVISIBLE= 1 "
+        + "GROUP BY COM.OPCION,CM.MENU,CM.DESCRIPCIONMENU,CSM.SUBMENU,CSM.DESCRIPCIONSUBMENU, COM.DESCRIPCION, COM.RUTA, CM.ICONO,COM.ICONO, "
+        + "CSM.ICONO, CM.ORDEN, CSM.ORDEN,COM.ORDEN "
+        + "ORDER BY CM.ORDEN,CSM.SUBMENU,COM.ORDEN";
+        return db.consultar(sql, null, idUsuario);
     }
 }

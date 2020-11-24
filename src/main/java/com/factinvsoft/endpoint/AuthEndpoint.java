@@ -34,7 +34,7 @@ public class AuthEndpoint {
 
     @Inject
     @Claim("idusuario")
-    private JsonNumber idusuario;
+    private JsonNumber idUsuario;
 
     @POST
     @Path("login")
@@ -65,9 +65,19 @@ public class AuthEndpoint {
     @Path("user")
     public Response consultarUsuario() {
         try {
-            return Response.ok(authService.consultarUsuario(idusuario.intValue())).build();
+            return Response.ok(authService.consultarUsuario(idUsuario.intValue())).build();
         } catch (final SQLException ex) {
             return Response.serverError().entity(ex).build();
+        }
+    }
+
+    @GET
+    @Path("menu")
+    public Response menu(){
+        try {
+            return Response.ok(authService.menu(idUsuario.intValue())).build();
+        } catch (Exception e) {
+            return Response.status(400).entity(e.getMessage()).build();
         }
     }
 }
